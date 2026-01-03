@@ -1,0 +1,19 @@
+{
+    "_default": {
+        "1": {
+            "pet": {
+                "dirty": 10,
+                "energy": 4,
+                "happiness": 2,
+                "hunger": 6,
+                "is_alive": true,
+                "is_sleeping": true,
+                "last_update": "2026-01-02T23:21:35.228857",
+                "look": "\ud83e\udd90",
+                "name": "tama",
+                "zero_since": null
+            },
+            "user_id": 717026708
+        }
+    }
+}
