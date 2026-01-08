@@ -5,6 +5,8 @@ from tamagogo import Tamago
 from .feed import show_food_options, feed_callback_handler
 from .utils import get_pet_or_reply
 from .sleep import wake_callback, pet_is_sleeping, wake_up
+from game_data.items import ITEMS
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 async def tama_handler(message: types.Message):
     pet = await get_pet_or_reply(message)
@@ -17,12 +19,68 @@ async def tama_handler(message: types.Message):
     dirty_emoji_count = pet.dirty // 2
 
     await message.answer(
-        f"{pet.look} {pet.name}\n"
-        f"Сытость: {'🍖' * hunger_emoji_count} ({pet.hunger}/10)\n"
-        f"Настроение: {'🌟' * happiness_emoji_count} ({pet.happiness}/10)\n"
-        f"Энергия: {'⚡' * energy_emoji_count} ({pet.energy}/10)\n"
-        f"Грязь: {'💩' * dirty_emoji_count} ({pet.dirty}/10)"
+        f"{pet.look} Привет, я твой {pet.name}!\n\n"
+        f"🍖 Сытость: ({pet.hunger}/10)\n"
+        f"🌟 Настроение: ({pet.happiness}/10)\n"
+        f"⚡ Энергия: ({pet.energy}/10)\n"
+        f"💩 Грязь: ({pet.dirty}/10)"
     )
+
+async def inventory_handler(message: types.Message):
+    pet = await get_pet_or_reply(message)
+    if not pet:
+        return
+
+    text = f"Инвентарь {pet.name}:\n{pet.get_inventory_text()}"
+    await message.answer(text)
+
+def shop_keyboard() -> InlineKeyboardMarkup:
+    kb = []
+    row = []
+
+    for item_id, item in ITEMS.items():
+        row.append(
+        InlineKeyboardButton(
+            text = f"{item['name']} ({item['price']})",
+            callback_data=f"buy_{item_id}"
+            )
+        )
+
+        if len(row) == 2:
+            kb.append(row)
+            row = []
+
+    if row:
+        kb.append(row)
+
+    return InlineKeyboardMarkup(inline_keyboard=kb)
+
+async def shop_handler(message: types.Message):
+    await message.answer("Магазин:", reply_markup=shop_keyboard())
+
+async def buy_callback(callback):
+    pet = await get_pet_or_reply(callback, allow_sleeping=True)
+    if not pet:
+        return
+
+    item_id = callback.data.replace("buy_", "")
+    item = ITEMS.get(item_id)
+
+    if not item:
+        await callback_answer("Товар не найден", show_alert=True)
+        return
+
+    price = item["price"]
+
+    if pet.coins < price:
+        await callback.answer("Недостаточно денег", show_alert=True)
+        return
+
+    pet.coins -= price
+    pet.add_item(item_id)
+    save_pet(callback.from_user.id, pet)
+
+    await callback.answer(f"Куплено {item['name']}")
 
 async def feed_handler(message: types.Message):
     await show_food_options(message)
@@ -92,5 +150,8 @@ def register_game_handlers(dp: Dispatcher):
     dp.message.register(feed_handler, Command(commands=["feed"]))
     dp.message.register(play_handler, Command(commands=["play"]))
     dp.message.register(name_handler, Command(commands=["name"]))
+    dp.message.register(inventory_handler, Command(commands=["inventory"]))
+    dp.message.register(shop_handler, Command(commands=["shop"]))
     dp.callback_query.register(feed_callback_handler,F.data.startswith("feed_"))
     dp.callback_query.register(wake_callback, F.data == "wake_up")
+    dp.callback_query.register(buy_callback, F.data.startswith("buy_"))

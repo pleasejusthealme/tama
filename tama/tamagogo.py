@@ -14,6 +14,7 @@ class Tamago:
         self.hunger = Tamago.MAX_HUNGER
         self.happiness = Tamago.MAX_HAPPINESS
         self.energy = Tamago.MAX_ENERGY
+        self.coins = 0
         self.is_sleeping = False
         self.dirty = 0
         self.is_alive = True
@@ -32,6 +33,16 @@ class Tamago:
             del self.inventory[item_id]
         return True
 
+    def get_inventory_text(self) -> str:
+        if not self.inventory:
+            return "Инвентарь пуст"
+        lines = []
+        for item_id, amount in self.inventory.items():
+            from game_data.items import ITEMS
+            name = ITEMS.get(item_id, {}).get("name", item_id)
+            lines.append(f"{name} x{amount}")
+        return "\n".join(lines)
+
     def use_item(self, item_id: str) -> str:
         from game_data.items import ITEMS
 
@@ -39,16 +50,17 @@ class Tamago:
         if not item:
             return "unknown"
 
-        if not self.remove_item(item_id):
-            return "no item"
+        if not item.get("is_base", False):
+            if not self.remove_item(item_id, 1):
+                return "no item"
 
-        if item["type"] == "food":
-            self.hunger = min(self.MAX_HUNGER, self.hunger + item["hunger"])
+            if item["type"] == "food":
+                self.hunger = min(self.MAX_HUNGER, self.hunger + item.get('amount', 1))
 
-        elif item["type"] == "bath":
-            self.dirty = max(self.MAX_DIRTY, self.dirty - item["bath"])
+            elif item["type"] == "bath":
+                self.dirty = max(self.dirty - item.get("amount", 1), 0)
 
-        return "ok"
+            return "ok"
 
     def lazy_update(self):
         if not self.is_alive:
@@ -113,6 +125,7 @@ class Tamago:
             "happiness": self.happiness,
             "dirty": self.dirty,
             "energy": self.energy,
+            "coins": self.coins,
             "inventory": self.inventory,
             "is_sleeping": self.is_sleeping,
             "is_alive": self.is_alive,
@@ -132,6 +145,7 @@ class Tamago:
         pet.energy = data.get("energy", Tamago.MAX_ENERGY)
         pet.is_sleeping = data.get("is_sleeping", False)
         pet.is_alive = data.get("is_alive", True)
+        pet.coins = data.get("coins", 0)
         last_update = data.get("last_update")
         pet.inventory = data.get("inventory", {})
         pet.last_update = datetime.fromisoformat(last_update) if last_update else datetime.utcnow()

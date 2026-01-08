@@ -2,6 +2,10 @@ from aiogram import types
 from users import save_pet
 from .utils import get_pet, get_pet_or_reply
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from tamagogo import Tamago
+from game_data.items import ITEMS
+
+buttons_per_row = 4
 
 def food_keyboard():
     kb = InlineKeyboardMarkup(
@@ -45,4 +49,29 @@ async def show_food_options(message: types.Message):
     pet = await get_pet_or_reply(message)
     if not pet:
         return
-    await message.answer("Выбери что я съем:", reply_markup=food_keyboard())
+
+    kb = InlineKeyboardMarkup(row_width = buttons_per_row)
+
+    base_items = [item_id for item_id, item in ITEMS.items() if item.get("is_base", False)]
+    base_buttons = [
+        InlineKeyboardButton(
+            text=f"{ITEMS[item_id['name']]} {ITEMS[item_id].get('amount', '')}",
+            callback_data = f"feed_{item_id}"
+        ) for item_id in base_items
+    ]
+
+    inventory_buttons = []
+    for item_id, count in pet.inventory.items():
+        item = ITEMS.get(item_id)
+        if item:
+            inventory_buttons.append(
+                InlineKeyboardButton(
+                    text = f"{item['name']} ({count})",
+                    callback_data = f"feed_{item_id}"
+                )
+            )
+
+    all_buttons = base_buttons + inventory_buttons
+    kb.add(*all_buttons)
+
+    await message.answer("Выбери, чем меня покормить:", reply_markup=kb)

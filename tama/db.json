@@ -14,6 +14,25 @@
                 "zero_since": "2026-01-03T15:52:22.318296"
             },
             "user_id": 717026708
+        },
+        "2": {
+            "pet": {
+                "coins": 0,
+                "dirty": 1,
+                "energy": 10,
+                "happiness": 9,
+                "hunger": 10,
+                "inventory": {
+                    "meat": 3
+                },
+                "is_alive": true,
+                "is_sleeping": false,
+                "last_update": "2026-01-08T10:54:54.980294",
+                "look": "\ud83e\udd90",
+                "name": "tama",
+                "zero_since": null
+            },
+            "user_id": 851939491
         }
     }
 }
