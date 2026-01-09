@@ -1,17 +1,36 @@
 {
     "_default": {
-        "1": {
+        "10": {
             "pet": {
-                "dirty": 10,
+                "coins": 0,
+                "dirty": 0,
                 "energy": 10,
-                "happiness": 0,
-                "hunger": 0,
-                "is_alive": false,
+                "happiness": 10,
+                "hunger": 10,
+                "inventory": {},
+                "is_alive": true,
                 "is_sleeping": false,
-                "last_update": "2026-01-03T16:08:31.382360",
-                "look": "\ud83e\udd90",
-                "name": "tama",
-                "zero_since": "2026-01-03T15:52:22.318296"
+                "last_update": "2026-01-08T21:56:53.446498",
+                "look": "\ud83d\udc31",
+                "name": "\u041d\u0435\u0444\u0435\u0440\u0442\u0451\u043d\u044b\u0448",
+                "zero_since": null
+            },
+            "user_id": 1867488792
+        },
+        "11": {
+            "pet": {
+                "coins": 0,
+                "dirty": 2,
+                "energy": 10,
+                "happiness": 8,
+                "hunger": 10,
+                "inventory": {},
+                "is_alive": true,
+                "is_sleeping": false,
+                "last_update": "2026-01-08T22:00:07.597100",
+                "look": "\ud83d\udc37",
+                "name": "\u043f\u0438\u0441\u044e\u043d",
+                "zero_since": null
             },
             "user_id": 717026708
         },
@@ -33,6 +52,23 @@
                 "zero_since": null
             },
             "user_id": 851939491
+        },
+        "9": {
+            "pet": {
+                "coins": 0,
+                "dirty": 1,
+                "energy": 10,
+                "happiness": 9,
+                "hunger": 10,
+                "inventory": {},
+                "is_alive": true,
+                "is_sleeping": false,
+                "last_update": "2026-01-08T21:55:59.278186",
+                "look": "\ud83e\udd90",
+                "name": "nigga",
+                "zero_since": null
+            },
+            "user_id": 722159558
         }
     }
 }
